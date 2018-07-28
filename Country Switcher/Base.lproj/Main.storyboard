@@ -23,7 +23,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="whiteLarge" translatesAutoresizingMaskIntoConstraints="NO" id="59g-sp-YXP">
-                                <rect key="frame" x="928" y="795" width="64" height="64"/>
+                                <rect key="frame" x="928" y="786" width="64" height="64"/>
                                 <color key="color" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             </activityIndicatorView>
                             <view opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="EGM-9L-CxF">
@@ -66,7 +66,13 @@
                                 </constraints>
                             </view>
                             <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Communicating with router…" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rn8-SI-gIM">
-                                <rect key="frame" x="713" y="899" width="494" height="46"/>
+                                <rect key="frame" x="713" y="890" width="494" height="46"/>
+                                <fontDescription key="fontDescription" style="UICTFontTextStyleHeadline"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Current Status" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="GVB-cX-0RX">
+                                <rect key="frame" x="835" y="248" width="251" height="46"/>
                                 <fontDescription key="fontDescription" style="UICTFontTextStyleHeadline"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
@@ -74,11 +80,13 @@
                         </subviews>
                         <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
+                            <constraint firstItem="GVB-cX-0RX" firstAttribute="centerX" secondItem="wu6-TO-1qx" secondAttribute="centerX" id="4Eq-Ac-Gxg"/>
+                            <constraint firstItem="59g-sp-YXP" firstAttribute="top" secondItem="EGM-9L-CxF" secondAttribute="bottom" constant="100" id="4Go-Z3-tTz"/>
+                            <constraint firstItem="rn8-SI-gIM" firstAttribute="centerX" secondItem="wu6-TO-1qx" secondAttribute="centerX" id="EwF-Hg-2JO"/>
                             <constraint firstItem="EGM-9L-CxF" firstAttribute="centerY" secondItem="wu6-TO-1qx" secondAttribute="centerY" id="Gge-j8-Req"/>
                             <constraint firstItem="EGM-9L-CxF" firstAttribute="leading" secondItem="wu6-TO-1qx" secondAttribute="leading" constant="200" id="Mue-Qh-B4I"/>
                             <constraint firstItem="59g-sp-YXP" firstAttribute="centerX" secondItem="wu6-TO-1qx" secondAttribute="centerX" id="dOn-Mf-YTS"/>
-                            <constraint firstItem="rn8-SI-gIM" firstAttribute="centerX" secondItem="59g-sp-YXP" secondAttribute="centerX" id="kRX-tB-rxE"/>
-                            <constraint firstItem="wu6-TO-1qx" firstAttribute="bottom" secondItem="rn8-SI-gIM" secondAttribute="bottom" constant="75" id="oHq-PG-kxn"/>
+                            <constraint firstItem="EGM-9L-CxF" firstAttribute="top" secondItem="GVB-cX-0RX" secondAttribute="bottom" constant="100" id="gUW-Hj-5W0"/>
                             <constraint firstItem="wu6-TO-1qx" firstAttribute="trailing" secondItem="EGM-9L-CxF" secondAttribute="trailing" constant="200" id="q44-O4-nDB"/>
                             <constraint firstItem="rn8-SI-gIM" firstAttribute="top" secondItem="59g-sp-YXP" secondAttribute="bottom" constant="40" id="tDN-JQ-9k3"/>
                         </constraints>
@@ -86,6 +94,9 @@
                     </view>
                     <connections>
                         <outlet property="activityIndicator" destination="59g-sp-YXP" id="ezX-ho-ize"/>
+                        <outlet property="connectButton" destination="l8c-7A-jYx" id="4me-XW-U1i"/>
+                        <outlet property="disconnectButton" destination="dKp-Ka-0yq" id="cW8-TQ-iph"/>
+                        <outlet property="infoLabel" destination="GVB-cX-0RX" id="bM2-lm-ehE"/>
                         <outlet property="statusLabel" destination="rn8-SI-gIM" id="cdY-5p-ILv"/>
                     </connections>
                 </viewController>

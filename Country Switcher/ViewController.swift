@@ -10,15 +10,29 @@ import UIKit
 
 class ViewController: UIViewController {
 	
+	@IBOutlet var connectButton: UIButton?
+	@IBOutlet var disconnectButton: UIButton?
+	
 	@IBOutlet var activityIndicator: UIActivityIndicatorView?
 	@IBOutlet var statusLabel: UILabel?
+	@IBOutlet var infoLabel: UILabel?
+	
+	var appearNotification: NSObjectProtocol?
 	
 	let session = URLSession(configuration: .default)
 	
-	override func viewDidLoad() {
-		super.viewDidLoad()
+	required init?(coder aDecoder: NSCoder) {
+		super.init(coder: aDecoder)
 		
-		activityIndicator?.tintColor = .white
+		appearNotification = NotificationCenter.default.addObserver(forName: .UIApplicationWillEnterForeground, object: nil, queue: .main) { _ in
+			self.checkCurrentConnection()
+		}
+	}
+	
+	override func viewDidAppear(_ animated: Bool) {
+		super.viewDidAppear(animated)
+		
+		checkCurrentConnection()
 	}
 	
 	@IBAction func connectVPN() {
@@ -29,14 +43,64 @@ class ViewController: UIViewController {
 		switchVpn(.stop)
 	}
 	
+	private var checkingConnection = false
+	
+	private func checkCurrentConnection() {
+		guard checkingConnection == false else {
+			return
+		}
+		
+		checkingConnection = true
+		
+		setStatus("Checking current connection…")
+		
+		testCountry() { country in
+			self.checkingConnection = false
+			
+			if let country = country {
+				self.setInfoCountry(country)
+			} else {
+				let alert = UIAlertController(title: "Country Switcher", message: "Your device currently doesn’t appear to have a connection.", preferredStyle: .alert)
+				
+				alert.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
+				
+				self.present(alert, animated: true, completion: nil)
+			}
+			
+			self.setStatus(nil)
+		}
+	}
+	
 	private func setStatus(_ status: String?) {
 		if let status = status {
 			statusLabel?.text = status
 			statusLabel?.isHidden = false
+			
 			activityIndicator?.startAnimating()
+			
+			connectButton?.isEnabled = false
+			disconnectButton?.isEnabled = false
 		} else {
 			statusLabel?.isHidden = true
 			activityIndicator?.stopAnimating()
+			
+			connectButton?.isEnabled = true
+			disconnectButton?.isEnabled = true
+		}
+	}
+	
+	private func setInfoCountry(_ countryCode: String?) {
+		infoLabel?.isHidden = false
+		
+		if let code = countryCode {
+			let countryCodes = [
+				"GB": "United Kingdom",
+				"US": "United States"
+			]
+			
+			infoLabel?.text = "Current country: \(countryCodes[code] ?? code)"
+		} else {
+			infoLabel?.text = "No internet connection."
 		}
 	}
 	
@@ -44,11 +108,7 @@ class ViewController: UIViewController {
 		setStatus("Communicating with router…")
 		
 		func alert(message: String) {
-			let alert = UIAlertController(
-				title: "VPN Action",
-				message: message,
-				preferredStyle: .alert
-			)
+			let alert = UIAlertController(title: "Country Switcher", message: message, preferredStyle: .alert)
 			
 			alert.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
 			
@@ -69,6 +129,8 @@ class ViewController: UIViewController {
 							self.setStatus(nil)
 							
 							alert(message: "The country has successfully been switched!")
+							
+							self.setInfoCountry(country)
 						} else {
 							if attempts < 20 {
 								Timer.scheduledTimer(withTimeInterval: 10, repeats: false) { _ in

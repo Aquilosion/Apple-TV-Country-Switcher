@@ -11,8 +11,6 @@
 		E15A33272102C9240001F2FD /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E15A33262102C9240001F2FD /* ViewController.swift */; };
 		E15A332A2102C9240001F2FD /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E15A33282102C9240001F2FD /* Main.storyboard */; };
 		E15A332C2102C9260001F2FD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E15A332B2102C9260001F2FD /* Assets.xcassets */; };
-		E15A333B2103716E0001F2FD /* uk-flag.png in Resources */ = {isa = PBXBuildFile; fileRef = E15A33392103716E0001F2FD /* uk-flag.png */; };
-		E15A333C2103716E0001F2FD /* us-flag.png in Resources */ = {isa = PBXBuildFile; fileRef = E15A333A2103716E0001F2FD /* us-flag.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -22,8 +20,6 @@
 		E15A33292102C9240001F2FD /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		E15A332B2102C9260001F2FD /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		E15A332D2102C9260001F2FD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		E15A33392103716E0001F2FD /* uk-flag.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "uk-flag.png"; sourceTree = "<group>"; };
-		E15A333A2103716E0001F2FD /* us-flag.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "us-flag.png"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -61,8 +57,6 @@
 				E15A33282102C9240001F2FD /* Main.storyboard */,
 				E15A332B2102C9260001F2FD /* Assets.xcassets */,
 				E15A332D2102C9260001F2FD /* Info.plist */,
-				E15A33392103716E0001F2FD /* uk-flag.png */,
-				E15A333A2103716E0001F2FD /* us-flag.png */,
 			);
 			path = "Country Switcher";
 			sourceTree = "<group>";
@@ -126,9 +120,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E15A332C2102C9260001F2FD /* Assets.xcassets in Resources */,
-				E15A333C2103716E0001F2FD /* us-flag.png in Resources */,
 				E15A332A2102C9240001F2FD /* Main.storyboard in Resources */,
-				E15A333B2103716E0001F2FD /* uk-flag.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -276,13 +268,13 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 8A22CN874M;
+				DEVELOPMENT_TEAM = ASK3NMLLTG;
 				INFOPLIST_FILE = "Country Switcher/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "com.aquis.Country-Switcher";
+				PRODUCT_BUNDLE_IDENTIFIER = com.aquis.CountrySwitcher;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = 3;
@@ -295,13 +287,13 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 8A22CN874M;
+				DEVELOPMENT_TEAM = ASK3NMLLTG;
 				INFOPLIST_FILE = "Country Switcher/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "com.aquis.Country-Switcher";
+				PRODUCT_BUNDLE_IDENTIFIER = com.aquis.CountrySwitcher;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = 3;
