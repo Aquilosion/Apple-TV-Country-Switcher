@@ -1,16 +1,18 @@
 {
   "images" : [
     {
+      "filename" : "background.heic",
       "idiom" : "tv",
       "scale" : "1x"
     },
     {
+      "filename" : "background@2x.heic",
       "idiom" : "tv",
       "scale" : "2x"
     }
   ],
   "info" : {
-    "version" : 1,
-    "author" : "xcode"
+    "author" : "xcode",
+    "version" : 1
   }
 }

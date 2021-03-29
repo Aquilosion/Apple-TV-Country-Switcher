@@ -24,7 +24,7 @@ class ViewController: UIViewController {
 	required init?(coder aDecoder: NSCoder) {
 		super.init(coder: aDecoder)
 		
-		appearNotification = NotificationCenter.default.addObserver(forName: .UIApplicationWillEnterForeground, object: nil, queue: .main) { _ in
+		appearNotification = NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: .main) { _ in
 			self.checkCurrentConnection()
 		}
 	}
@@ -155,7 +155,7 @@ class ViewController: UIViewController {
 	
 	private func testCountry(handler: @escaping (String?) -> ()) {
 		let url = URL(string: "https://ipinfo.io/country")!
-		let request = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalAndRemoteCacheData, timeoutInterval: 5)
+		let request = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalAndRemoteCacheData, timeoutInterval: 120)
 		
 		let task = session.dataTask(with: request) { data, response, error in
 			DispatchQueue.main.async {
@@ -199,8 +199,8 @@ class ViewController: UIViewController {
 	}
 	
 	private func vpnActionRequest(_ action: VPNAction, handler: @escaping (Bool) -> ()) {
-		let url = URL(string: "http://192.168.8.1:8081/lua/" + action.rawValue)!
-		let request = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalAndRemoteCacheData, timeoutInterval: 5)
+		let url = URL(string: "http://192.168.8.1:8081/lua/" + action.rawValue)! // 192.168.10.1 for upstairs, 192.168.8.1 for downstairs
+		let request = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalAndRemoteCacheData, timeoutInterval: 120)
 		
 		let task = session.dataTask(with: request) { data, response, error in
 			DispatchQueue.main.async {
@@ -208,17 +208,7 @@ class ViewController: UIViewController {
 					print("Could not negotiate with router: \(error)")
 				}
 				
-				guard let data = data else {
-					handler(false)
-					return
-				}
-				
-				guard let string = String(data: data, encoding: .utf8) else {
-					handler(false)
-					return
-				}
-				
-				handler(string == "Success")
+				handler(true)
 			}
 		}
 		
