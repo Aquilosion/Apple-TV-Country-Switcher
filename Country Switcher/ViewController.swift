@@ -128,12 +128,10 @@ class ViewController: UIViewController {
 						if country == action.targetCountry {
 							self.setStatus(nil)
 							
-							alert(message: "The country has successfully been switched!")
-							
 							self.setInfoCountry(country)
 						} else {
 							if attempts < 20 {
-								Timer.scheduledTimer(withTimeInterval: 10, repeats: false) { _ in
+								Timer.scheduledTimer(withTimeInterval: 1, repeats: false) { _ in
 									checkIfConnected()
 								}
 							} else {
@@ -155,7 +153,7 @@ class ViewController: UIViewController {
 	
 	private func testCountry(handler: @escaping (String?) -> ()) {
 		let url = URL(string: "https://ipinfo.io/country")!
-		let request = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalAndRemoteCacheData, timeoutInterval: 120)
+		let request = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalAndRemoteCacheData, timeoutInterval: 5)
 		
 		let task = session.dataTask(with: request) { data, response, error in
 			DispatchQueue.main.async {
