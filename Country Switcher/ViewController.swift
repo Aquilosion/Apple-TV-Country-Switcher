@@ -21,6 +21,16 @@ class ViewController: UIViewController {
 	
 	let session = URLSession(configuration: .default)
 	
+	var serverAddress: String? {
+		get {
+			UserDefaults.standard.string(forKey: "ServerAddress")
+		}
+		
+		set {
+			UserDefaults.standard.set(newValue, forKey: "ServerAddress")
+		}
+	}
+	
 	required init?(coder aDecoder: NSCoder) {
 		super.init(coder: aDecoder)
 		
@@ -29,10 +39,39 @@ class ViewController: UIViewController {
 		}
 	}
 	
+	override func viewDidLoad() {
+		super.viewDidLoad()
+		
+		let playPause = UILongPressGestureRecognizer(target: self, action: #selector(Self.showSettings))
+		playPause.allowedPressTypes = [NSNumber(integerLiteral: UIPress.PressType.playPause.rawValue)]
+		self.view.addGestureRecognizer(playPause)
+	}
+	
 	override func viewDidAppear(_ animated: Bool) {
 		super.viewDidAppear(animated)
 		
 		checkCurrentConnection()
+	}
+	
+	@objc func showSettings(gesture: UILongPressGestureRecognizer) {
+		guard gesture.state == .began else {
+			return
+		}
+		
+		let controller = UIAlertController(title: "VPN Router Address", message: "Enter the address of the VPN router.", preferredStyle: .alert)
+		controller.addTextField() { textField in
+			textField.text = self.serverAddress
+			
+			textField.keyboardType = .numbersAndPunctuation
+		}
+		
+		controller.addAction(UIAlertAction(title: "Save", style: .default, handler: { action in
+			self.serverAddress = controller.textFields!.first!.text
+		}))
+		
+		controller.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+		
+		present(controller, animated: true)
 	}
 	
 	@IBAction func connectVPN() {
@@ -197,7 +236,17 @@ class ViewController: UIViewController {
 	}
 	
 	private func vpnActionRequest(_ action: VPNAction, handler: @escaping (Bool) -> ()) {
-		let url = URL(string: "http://192.168.8.1:8081/lua/" + action.rawValue)! // 192.168.10.1 for upstairs, 192.168.8.1 for downstairs
+		guard let serverAddress else {
+			let alert = UIAlertController(title: "No Server Address", message: "Hold down the Play button to set the server address.", preferredStyle: .alert)
+			alert.addAction(UIAlertAction(title: "OK", style: .default))
+			present(alert, animated: true)
+			
+			handler(false)
+			return
+		}
+		
+		let url = URL(string: "http://\(serverAddress)/lua/" + action.rawValue)!
+		
 		let request = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalAndRemoteCacheData, timeoutInterval: 120)
 		
 		let task = session.dataTask(with: request) { data, response, error in
