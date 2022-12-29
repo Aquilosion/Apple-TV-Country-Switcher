@@ -253,6 +253,8 @@ class ViewController: UIViewController {
 			DispatchQueue.main.async {
 				if let error = error {
 					print("Could not negotiate with router: \(error)")
+					handler(false)
+					return
 				}
 				
 				handler(true)
