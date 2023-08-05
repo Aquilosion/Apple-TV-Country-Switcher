@@ -7,9 +7,9 @@
 //
 
 import UIKit
+import NetworkExtension
 
 class ViewController: UIViewController {
-	
 	@IBOutlet var connectButton: UIButton?
 	@IBOutlet var disconnectButton: UIButton?
 	
@@ -21,21 +21,23 @@ class ViewController: UIViewController {
 	
 	let session = URLSession(configuration: .default)
 	
-	var serverAddress: String? {
-		get {
-			UserDefaults.standard.string(forKey: "ServerAddress")
-		}
-		
-		set {
-			UserDefaults.standard.set(newValue, forKey: "ServerAddress")
-		}
-	}
+	@UserDefault(key: "ServerAddress")
+	var serverAddress: String?
+	
+	@UserDefault(key: "Username")
+	var username: String?
+	
+	@Keychain(key: "UserPassword")
+	var password: String?
+	
+	@Keychain(key: "SharedSecret")
+	var sharedSecret: String?
 	
 	required init?(coder aDecoder: NSCoder) {
 		super.init(coder: aDecoder)
 		
 		appearNotification = NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: .main) { _ in
-			self.checkCurrentConnection()
+//			self.checkCurrentConnection()
 		}
 	}
 	
@@ -50,39 +52,103 @@ class ViewController: UIViewController {
 	override func viewDidAppear(_ animated: Bool) {
 		super.viewDidAppear(animated)
 		
-		checkCurrentConnection()
+//		checkCurrentConnection()
 	}
 	
-	@objc func showSettings(gesture: UILongPressGestureRecognizer) {
+	private func getSetting(title: String, message: String, answer: String? = nil) async throws -> String {
+		let controller = UIAlertController(title: title, message: message, preferredStyle: .alert)
+		
+		controller.addTextField() { textField in
+			textField.text = answer
+		}
+		
+		let result = try await withCheckedThrowingContinuation { continuation in
+			controller.addAction(UIAlertAction(title: "Save", style: .default) { action in
+				continuation.resume(returning: controller.textFields![0].text ?? "")
+			})
+			
+			controller.addAction(UIAlertAction(title: "Cancel", style: .cancel) { action in
+				continuation.resume(throwing: CancellationError())
+			})
+			
+			present(controller, animated: true)
+		}
+		
+		return result
+	}
+	
+	@objc func showSettings(gesture: UILongPressGestureRecognizer) async {
 		guard gesture.state == .began else {
 			return
 		}
 		
-		let controller = UIAlertController(title: "VPN Router Address", message: "Enter the address of the VPN router.", preferredStyle: .alert)
-		controller.addTextField() { textField in
-			textField.text = self.serverAddress
+		do {
+			let serverAddress = try await getSetting(
+				title: "Server Address",
+				message: "Enter the address of the VPN server.",
+				answer: self.serverAddress
+			)
 			
-			textField.keyboardType = .numbersAndPunctuation
+			let username = try await getSetting(
+				title: "Username",
+				message: "Enter VPN username.",
+				answer: self.username
+			)
+			
+			let password = try await getSetting(
+				title: "Password",
+				message: "Enter password for that account."
+			)
+			
+			let sharedSecret = try await getSetting(
+				title: "Shared Secret",
+				message: "Enter shared secret."
+			)
+			
+			self.serverAddress = serverAddress
+			self.username = username
+			self.password = password
+			self.sharedSecret = sharedSecret
+		} catch {
+			
 		}
-		
-		controller.addAction(UIAlertAction(title: "Save", style: .default, handler: { action in
-			self.serverAddress = controller.textFields!.first!.text
-		}))
-		
-		controller.addAction(UIAlertAction(title: "Cancel", style: .cancel))
-		
-		present(controller, animated: true)
 	}
 	
 	@IBAction func connectVPN() {
-		switchVpn(.start)
+		Task {
+			do {
+				try await connectVPN()
+			} catch {
+				print(error)
+			}
+		}
 	}
 	
 	@IBAction func disconnectVPN() {
-		switchVpn(.stop)
+		Task {
+			do {
+				try await disconnectVPN()
+			} catch {
+				print(error)
+			}
+		}
 	}
 	
-	private var checkingConnection = false
+	private func connectVPN() async throws {
+		try await NEVPNManager.shared().loadFromPreferences()
+		
+		let connection = NEVPNProtocolIPSec()
+		connection.serverAddress = "aquis.me"
+		connection.username = "Robert"
+		
+		
+	}
+	
+	private func disconnectVPN() async throws {
+		
+	}
+	
+/*	private var checkingConnection = false
 	
 	private func checkCurrentConnection() {
 		guard checkingConnection == false else {
@@ -143,7 +209,7 @@ class ViewController: UIViewController {
 		}
 	}
 	
-	private func switchVpn(_ action: VPNAction) {
+	private func switchVpn(_ action: VPNAction) async {
 		setStatus("Communicating with router…")
 		
 		func alert(message: String) {
@@ -154,7 +220,7 @@ class ViewController: UIViewController {
 			self.present(alert, animated: true, completion: nil)
 		}
 		
-		vpnActionRequest(action) { success in
+		/*vpnActionRequest(action) { success in
 			if success {
 				var attempts = 0
 				
@@ -187,82 +253,26 @@ class ViewController: UIViewController {
 				self.setStatus(nil)
 				alert(message: "Failed to communicate with router.")
 			}
-		}
+		}*/
 	}
 	
-	private func testCountry(handler: @escaping (String?) -> ()) {
+	private func testCountry() async throws -> String {
 		let url = URL(string: "https://ipinfo.io/country")!
 		let request = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalAndRemoteCacheData, timeoutInterval: 5)
 		
-		let task = session.dataTask(with: request) { data, response, error in
-			DispatchQueue.main.async {
-				if let error = error {
-					print("Could not get country code: \(error)")
-				}
-				
-				guard let data = data else {
-					handler(nil)
-					return
-				}
-				
-				guard let string = String(data: data, encoding: .utf8) else {
-					handler(nil)
-					return
-				}
-				
-				let trimmedString = string.trimmingCharacters(in: .whitespacesAndNewlines)
-				
-				handler(trimmedString)
-			}
+		enum CountryError: Error {
+			case invalidResponse
 		}
 		
-		task.resume()
-	}
-	
-	private enum VPNAction: String {
-		case start
-		case stop
+		let (data, _) = try await session.data(for: request)
 		
-		var targetCountry: String {
-			switch self {
-			case .start:
-				return "GB"
-				
-			case .stop:
-				return "US"
-				
-			}
-		}
-	}
-	
-	private func vpnActionRequest(_ action: VPNAction, handler: @escaping (Bool) -> ()) {
-		guard let serverAddress else {
-			let alert = UIAlertController(title: "No Server Address", message: "Hold down the Play button to set the server address.", preferredStyle: .alert)
-			alert.addAction(UIAlertAction(title: "OK", style: .default))
-			present(alert, animated: true)
-			
-			handler(false)
-			return
+		guard let string = String(data: data, encoding: .utf8) else {
+			throw CountryError.invalidResponse
 		}
 		
-		let url = URL(string: "http://\(serverAddress)/lua/" + action.rawValue)!
+		let trimmedString = string.trimmingCharacters(in: .whitespacesAndNewlines)
 		
-		let request = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalAndRemoteCacheData, timeoutInterval: 120)
-		
-		let task = session.dataTask(with: request) { data, response, error in
-			DispatchQueue.main.async {
-				if let error = error {
-					print("Could not negotiate with router: \(error)")
-					handler(false)
-					return
-				}
-				
-				handler(true)
-			}
-		}
-		
-		task.resume()
-	}
-	
+		return trimmedString
+	}*/
 }
 
