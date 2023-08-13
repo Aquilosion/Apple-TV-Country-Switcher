@@ -27,6 +27,7 @@ class ViewController: UIViewController {
 	@UserDefault(key: "Username")
 	var username: String?
 	
+	
 	@Keychain(key: "UserPassword")
 	var password: String?
 	
@@ -77,40 +78,42 @@ class ViewController: UIViewController {
 		return result
 	}
 	
-	@objc func showSettings(gesture: UILongPressGestureRecognizer) async {
+	@objc func showSettings(gesture: UILongPressGestureRecognizer) {
 		guard gesture.state == .began else {
 			return
 		}
 		
-		do {
-			let serverAddress = try await getSetting(
-				title: "Server Address",
-				message: "Enter the address of the VPN server.",
-				answer: self.serverAddress
-			)
-			
-			let username = try await getSetting(
-				title: "Username",
-				message: "Enter VPN username.",
-				answer: self.username
-			)
-			
-			let password = try await getSetting(
-				title: "Password",
-				message: "Enter password for that account."
-			)
-			
-			let sharedSecret = try await getSetting(
-				title: "Shared Secret",
-				message: "Enter shared secret."
-			)
-			
-			self.serverAddress = serverAddress
-			self.username = username
-			self.password = password
-			self.sharedSecret = sharedSecret
-		} catch {
-			
+		Task {
+			do {
+				let serverAddress = try await getSetting(
+					title: "Server Address",
+					message: "Enter the address of the VPN server.",
+					answer: self.serverAddress
+				)
+				
+				let username = try await getSetting(
+					title: "Username",
+					message: "Enter VPN username.",
+					answer: self.username
+				)
+				
+				let password = try await getSetting(
+					title: "Password",
+					message: "Enter password for that account."
+				)
+				
+				let sharedSecret = try await getSetting(
+					title: "Shared Secret",
+					message: "Enter shared secret."
+				)
+				
+				self.serverAddress = serverAddress
+				self.username = username
+				self.password = password
+				self.sharedSecret = sharedSecret
+			} catch {
+				
+			}
 		}
 	}
 	
@@ -135,13 +138,66 @@ class ViewController: UIViewController {
 	}
 	
 	private func connectVPN() async throws {
-		try await NEVPNManager.shared().loadFromPreferences()
+	/*	let manager = NEVPNManager.shared()
+		
+		try await manager.loadFromPreferences()
 		
 		let connection = NEVPNProtocolIPSec()
-		connection.serverAddress = "aquis.me"
-		connection.username = "Robert"
 		
+		connection.serverAddress = serverAddress
 		
+		connection.username = username
+		connection.passwordReference = $password
+		
+		connection.authenticationMethod = .sharedSecret
+		connection.sharedSecretReference = $sharedSecret
+		
+		connection.useExtendedAuthentication = true
+		connection.disconnectOnSleep = false
+		
+		manager.isEnabled = true
+		manager.protocolConfiguration = connection
+		manager.isOnDemandEnabled = false
+		manager.localizedDescription = serverAddress
+		
+		try await manager.saveToPreferences()
+		
+		print("Connecting…")
+		
+		try manager.connection.startVPNTunnel()
+		
+		print("Connected?")*/
+		
+		let prtcl = NEVPNProtocolIPSec()
+		prtcl.username = username
+		prtcl.passwordReference = $password
+		prtcl.serverAddress = serverAddress
+		prtcl.authenticationMethod = NEVPNIKEAuthenticationMethod.sharedSecret
+		prtcl.sharedSecretReference = $sharedSecret
+		prtcl.localIdentifier = "Test iOS device"
+		prtcl.remoteIdentifier = serverAddress
+		prtcl.useExtendedAuthentication = true
+		prtcl.disconnectOnSleep = false
+		
+		let manager = NEVPNManager.shared()
+		
+		manager.isEnabled = true
+		manager.protocolConfiguration = prtcl
+		manager.isOnDemandEnabled = false
+		manager.localizedDescription = "MyVPN Configuration"
+		manager.saveToPreferences(completionHandler: { (error) in
+			if (error != nil)
+			{
+				print("Error: ", error.debugDescription)
+//				completion?(false)
+			}
+			else
+			{
+//				self.serverButton.setTitle(server.name, for: UIControlState.normal)
+				print("VPN prefs saved")
+//				completion?(true)
+			}
+		})
 	}
 	
 	private func disconnectVPN() async throws {

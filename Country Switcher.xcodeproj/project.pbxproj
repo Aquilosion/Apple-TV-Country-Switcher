@@ -57,11 +57,11 @@
 		E15A33232102C9240001F2FD /* Country Switcher */ = {
 			isa = PBXGroup;
 			children = (
-				E13C21962A346AB700363054 /* Country Switcher.entitlements */,
 				E15A33242102C9240001F2FD /* AppDelegate.swift */,
 				E15A33262102C9240001F2FD /* ViewController.swift */,
 				E13C21972A34766A00363054 /* KeychainProperty.swift */,
 				E13C21992A34774A00363054 /* UserDefaultProperty.swift */,
+				E13C21962A346AB700363054 /* Country Switcher.entitlements */,
 				E15A33282102C9240001F2FD /* Main.storyboard */,
 				E15A332B2102C9260001F2FD /* Assets.xcassets */,
 				E15A332D2102C9260001F2FD /* Info.plist */,
@@ -285,10 +285,8 @@
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_ENTITLEMENTS = "Country Switcher/Country Switcher.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "iPhone Developer";
-				CODE_SIGN_STYLE = Manual;
-				DEVELOPMENT_TEAM = "";
-				"DEVELOPMENT_TEAM[sdk=appletvos*]" = ASK3NMLLTG;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = ASK3NMLLTG;
 				INFOPLIST_FILE = "Country Switcher/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -297,7 +295,6 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.aquis.CountrySwitcher;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=appletvos*]" = CSD;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 3;
 				TVOS_DEPLOYMENT_TARGET = 17.0;
@@ -311,10 +308,8 @@
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_ENTITLEMENTS = "Country Switcher/Country Switcher.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "iPhone Developer";
-				CODE_SIGN_STYLE = Manual;
-				DEVELOPMENT_TEAM = "";
-				"DEVELOPMENT_TEAM[sdk=appletvos*]" = ASK3NMLLTG;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = ASK3NMLLTG;
 				INFOPLIST_FILE = "Country Switcher/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -323,7 +318,6 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.aquis.CountrySwitcher;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=appletvos*]" = CSD;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 3;
 				TVOS_DEPLOYMENT_TARGET = 17.0;
