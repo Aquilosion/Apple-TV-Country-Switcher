@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder.AppleTV.Storyboard" version="3.0" toolsVersion="15505" targetRuntime="AppleTV" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
+<document type="com.apple.InterfaceBuilder.AppleTV.Storyboard" version="3.0" toolsVersion="32700.99.1234" targetRuntime="AppleTV" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
     <device id="appleTV" appearance="light"/>
     <dependencies>
-        <deployment identifier="tvOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15509"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22684"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -21,14 +21,14 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="whiteLarge" translatesAutoresizingMaskIntoConstraints="NO" id="59g-sp-YXP">
-                                <rect key="frame" x="928" y="786" width="64" height="64"/>
-                                <color key="color" systemColor="labelColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <rect key="frame" x="928" y="788.5" width="64" height="64"/>
+                                <color key="color" systemColor="labelColor"/>
                             </activityIndicatorView>
                             <view opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="EGM-9L-CxF">
-                                <rect key="frame" x="290" y="394" width="1340" height="292"/>
+                                <rect key="frame" x="280" y="391.5" width="1360" height="297"/>
                                 <subviews>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="l8c-7A-jYx">
-                                        <rect key="frame" x="0.0" y="0.0" width="584.5" height="292"/>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="l8c-7A-jYx">
+                                        <rect key="frame" x="0.0" y="0.0" width="595" height="297"/>
                                         <accessibility key="accessibilityConfiguration" label="UK"/>
                                         <constraints>
                                             <constraint firstAttribute="width" secondItem="l8c-7A-jYx" secondAttribute="height" multiplier="2:1" id="n52-fP-D3j"/>
@@ -39,8 +39,8 @@
                                             <action selector="connectVPN" destination="BYZ-38-t0r" eventType="primaryActionTriggered" id="32c-HU-d0Z"/>
                                         </connections>
                                     </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dKp-Ka-0yq">
-                                        <rect key="frame" x="784.5" y="0.0" width="555.5" height="292"/>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dKp-Ka-0yq">
+                                        <rect key="frame" x="795" y="0.0" width="565" height="297"/>
                                         <accessibility key="accessibilityConfiguration" label="USA"/>
                                         <constraints>
                                             <constraint firstAttribute="width" secondItem="dKp-Ka-0yq" secondAttribute="height" multiplier="19:10" id="g8w-WH-MMq"/>
@@ -64,35 +64,44 @@
                                 </constraints>
                             </view>
                             <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Communicating with router…" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rn8-SI-gIM">
-                                <rect key="frame" x="720.5" y="890" width="479" height="46"/>
-                                <fontDescription key="fontDescription" style="UICTFontTextStyleHeadline"/>
+                                <rect key="frame" x="777" y="872.5" width="366" height="35"/>
+                                <fontDescription key="fontDescription" style="UICTFontTextStyleSubhead"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Current Status" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="GVB-cX-0RX">
-                                <rect key="frame" x="838.5" y="248" width="243" height="46"/>
-                                <fontDescription key="fontDescription" style="UICTFontTextStyleHeadline"/>
+                            <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="United Kingdom" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="GVB-cX-0RX">
+                                <rect key="frame" x="759.5" y="217.5" width="401" height="69"/>
+                                <fontDescription key="fontDescription" style="UICTFontTextStyleTitle2"/>
                                 <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Current Country" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="vsS-jQ-fQP">
+                                <rect key="frame" x="870" y="286.5" width="180" height="30"/>
+                                <fontDescription key="fontDescription" style="UICTFontTextStyleCaption1"/>
+                                <color key="textColor" systemColor="secondaryLabelColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                         </subviews>
+                        <viewLayoutGuide key="safeArea" id="wu6-TO-1qx"/>
                         <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstItem="GVB-cX-0RX" firstAttribute="centerX" secondItem="wu6-TO-1qx" secondAttribute="centerX" id="4Eq-Ac-Gxg"/>
                             <constraint firstItem="59g-sp-YXP" firstAttribute="top" secondItem="EGM-9L-CxF" secondAttribute="bottom" constant="100" id="4Go-Z3-tTz"/>
+                            <constraint firstItem="vsS-jQ-fQP" firstAttribute="centerX" secondItem="wu6-TO-1qx" secondAttribute="centerX" id="56O-s1-Bm5"/>
                             <constraint firstItem="rn8-SI-gIM" firstAttribute="centerX" secondItem="wu6-TO-1qx" secondAttribute="centerX" id="EwF-Hg-2JO"/>
+                            <constraint firstItem="vsS-jQ-fQP" firstAttribute="top" secondItem="GVB-cX-0RX" secondAttribute="bottom" id="G9r-hv-beE"/>
                             <constraint firstItem="EGM-9L-CxF" firstAttribute="centerY" secondItem="wu6-TO-1qx" secondAttribute="centerY" id="Gge-j8-Req"/>
                             <constraint firstItem="EGM-9L-CxF" firstAttribute="leading" secondItem="wu6-TO-1qx" secondAttribute="leading" constant="200" id="Mue-Qh-B4I"/>
                             <constraint firstItem="59g-sp-YXP" firstAttribute="centerX" secondItem="wu6-TO-1qx" secondAttribute="centerX" id="dOn-Mf-YTS"/>
-                            <constraint firstItem="EGM-9L-CxF" firstAttribute="top" secondItem="GVB-cX-0RX" secondAttribute="bottom" constant="100" id="gUW-Hj-5W0"/>
                             <constraint firstItem="wu6-TO-1qx" firstAttribute="trailing" secondItem="EGM-9L-CxF" secondAttribute="trailing" constant="200" id="q44-O4-nDB"/>
-                            <constraint firstItem="rn8-SI-gIM" firstAttribute="top" secondItem="59g-sp-YXP" secondAttribute="bottom" constant="40" id="tDN-JQ-9k3"/>
+                            <constraint firstItem="EGM-9L-CxF" firstAttribute="top" secondItem="vsS-jQ-fQP" secondAttribute="bottom" constant="75" id="se7-yn-eKG"/>
+                            <constraint firstItem="rn8-SI-gIM" firstAttribute="top" secondItem="59g-sp-YXP" secondAttribute="bottom" constant="20" id="tDN-JQ-9k3"/>
                         </constraints>
-                        <viewLayoutGuide key="safeArea" id="wu6-TO-1qx"/>
                     </view>
                     <connections>
                         <outlet property="activityIndicator" destination="59g-sp-YXP" id="ezX-ho-ize"/>
                         <outlet property="connectButton" destination="l8c-7A-jYx" id="4me-XW-U1i"/>
+                        <outlet property="currentCountryLabel" destination="vsS-jQ-fQP" id="2gK-LY-c4z"/>
                         <outlet property="disconnectButton" destination="dKp-Ka-0yq" id="cW8-TQ-iph"/>
                         <outlet property="infoLabel" destination="GVB-cX-0RX" id="bM2-lm-ehE"/>
                         <outlet property="statusLabel" destination="rn8-SI-gIM" id="cdY-5p-ILv"/>
@@ -106,5 +115,11 @@
     <resources>
         <image name="uk-flag" width="1024" height="512"/>
         <image name="us-flag" width="1024" height="539"/>
+        <systemColor name="labelColor">
+            <color white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+        <systemColor name="secondaryLabelColor">
+            <color white="0.0" alpha="0.59999999999999998" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
     </resources>
 </document>

@@ -9,12 +9,12 @@
 import Foundation
 
 @propertyWrapper
-struct UserDefault {
+struct UserDefault<T> {
 	var key: String
 	
-	var wrappedValue: String? {
+	var wrappedValue: T? {
 		get {
-			UserDefaults.standard.string(forKey: key)
+			UserDefaults.standard.object(forKey: key) as? T
 		}
 		
 		set {
@@ -26,3 +26,8 @@ struct UserDefault {
 		self.key = key
 	}
 }
+
+protocol UserDefaultPropertyType { }
+
+extension String: UserDefaultPropertyType { }
+extension Data: UserDefaultPropertyType { }

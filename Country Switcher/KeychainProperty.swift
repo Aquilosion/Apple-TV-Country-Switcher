@@ -8,7 +8,7 @@
 
 import Foundation
 import Security
-
+/*
 @propertyWrapper
 struct Keychain {
 	static let serviceName = "io.aquis.CountrySwitcher"
@@ -31,7 +31,8 @@ struct Keychain {
 		let passwordQuery: [String: Any] = [kSecClass as String: kSecClassGenericPassword,
 											kSecAttrService as String: Self.serviceName,
 											kSecAttrAccount as String: key,
-											kSecReturnPersistentRef as String: true]
+											kSecReturnPersistentRef as String: true,
+											kSecAttrAccessGroup as String: "group.com.aquis.CountrySwitcher"]
 		
 		var result: AnyObject?
 		let status3 = SecItemCopyMatching(passwordQuery as CFDictionary, &result)
@@ -52,9 +53,11 @@ struct Keychain {
 									kSecAttrAccount as String: key,
 									kSecValueData as String: password.data(using: .utf8)!]
 		
+		SecItemDelete(query as CFDictionary)
+		
 		let status = SecItemAdd(query as CFDictionary, nil)
 		guard status == errSecSuccess else {
 			fatalError("Error adding password to Keychain: \(status)")
 		}
 	}
-}
+}*/

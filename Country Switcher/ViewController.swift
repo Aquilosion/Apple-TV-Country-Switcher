@@ -8,37 +8,74 @@
 
 import UIKit
 import NetworkExtension
+import TunnelKitManager
+import TunnelKitCore
+import TunnelKitOpenVPNManager
+import TunnelKitOpenVPNCore
 
 class ViewController: UIViewController {
 	@IBOutlet var connectButton: UIButton?
 	@IBOutlet var disconnectButton: UIButton?
 	
 	@IBOutlet var activityIndicator: UIActivityIndicatorView?
+	@IBOutlet var currentCountryLabel: UILabel?
 	@IBOutlet var statusLabel: UILabel?
 	@IBOutlet var infoLabel: UILabel?
 	
 	var appearNotification: NSObjectProtocol?
+	var statusNotification: NSObjectProtocol?
+	var failNotification: NSObjectProtocol?
 	
 	let session = URLSession(configuration: .default)
-	
-	@UserDefault(key: "ServerAddress")
-	var serverAddress: String?
 	
 	@UserDefault(key: "Username")
 	var username: String?
 	
+	@UserDefault(key: "Password")
+	var password: Data?
 	
-	@Keychain(key: "UserPassword")
-	var password: String?
+	@UserDefault(key: "Configuration")
+	var configuration: String?
 	
-	@Keychain(key: "SharedSecret")
-	var sharedSecret: String?
+	let vpn = NetworkExtensionVPN()
 	
 	required init?(coder aDecoder: NSCoder) {
 		super.init(coder: aDecoder)
 		
-		appearNotification = NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: .main) { _ in
-//			self.checkCurrentConnection()
+		appearNotification = NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: .main) {[weak self] _ in
+			Task {
+				await self?.vpn.prepare()
+			}
+		}
+		
+		statusNotification = NotificationCenter.default.addObserver(forName: VPNNotification.didChangeStatus, object: nil, queue: .main) { [weak self] notification in
+			guard let status = notification.userInfo?["Status"] as? VPNStatus else {
+				return
+			}
+			
+			let infoMessage: String?
+			let statusMessage: String?
+			
+			switch status {
+			case .connecting, .disconnecting:
+				infoMessage = nil
+				statusMessage = "Switching countries…"
+				
+			case .connected:
+				infoMessage = "United Kingdom"
+				statusMessage = nil
+				
+			case .disconnected:
+				infoMessage = "United States"
+				statusMessage = nil
+			}
+			
+			self?.setStatus(statusMessage)
+			self?.setInfoCountry(infoMessage)
+		}
+		
+		failNotification = NotificationCenter.default.addObserver(forName: VPNNotification.didFail, object: nil, queue: .main) { notification in
+			print("FAIL", notification)
 		}
 	}
 	
@@ -48,28 +85,26 @@ class ViewController: UIViewController {
 		let playPause = UILongPressGestureRecognizer(target: self, action: #selector(Self.showSettings))
 		playPause.allowedPressTypes = [NSNumber(integerLiteral: UIPress.PressType.playPause.rawValue)]
 		self.view.addGestureRecognizer(playPause)
-	}
-	
-	override func viewDidAppear(_ animated: Bool) {
-		super.viewDidAppear(animated)
 		
-//		checkCurrentConnection()
+		Task {
+			await vpn.prepare()
+		}
 	}
 	
-	private func getSetting(title: String, message: String, answer: String? = nil) async throws -> String {
+	private func getSetting(title: String, message: String, answer: String? = nil) async throws -> String? {
 		let controller = UIAlertController(title: title, message: message, preferredStyle: .alert)
 		
 		controller.addTextField() { textField in
 			textField.text = answer
 		}
 		
-		let result = try await withCheckedThrowingContinuation { continuation in
+		let result = await withCheckedContinuation { (continuation: CheckedContinuation<String?, Never>) in
 			controller.addAction(UIAlertAction(title: "Save", style: .default) { action in
 				continuation.resume(returning: controller.textFields![0].text ?? "")
 			})
 			
 			controller.addAction(UIAlertAction(title: "Cancel", style: .cancel) { action in
-				continuation.resume(throwing: CancellationError())
+				continuation.resume(returning: nil)
 			})
 			
 			present(controller, animated: true)
@@ -85,12 +120,6 @@ class ViewController: UIViewController {
 		
 		Task {
 			do {
-				let serverAddress = try await getSetting(
-					title: "Server Address",
-					message: "Enter the address of the VPN server.",
-					answer: self.serverAddress
-				)
-				
 				let username = try await getSetting(
 					title: "Username",
 					message: "Enter VPN username.",
@@ -102,15 +131,22 @@ class ViewController: UIViewController {
 					message: "Enter password for that account."
 				)
 				
-				let sharedSecret = try await getSetting(
-					title: "Shared Secret",
-					message: "Enter shared secret."
+				let configuration = try await getSetting(
+					title: "OVPN Configuration",
+					message: "Enter URL for OVPN configuration file."
 				)
 				
-				self.serverAddress = serverAddress
-				self.username = username
-				self.password = password
-				self.sharedSecret = sharedSecret
+				if let username {
+					self.username = username
+				}
+				
+				if let password {
+					self.password = try Keychain(group: "group.com.aquis.CountrySwitcher").set(password: password, for: "OpenVPN", context: "com.aquis.CountrySwitcher.OpenVPNExtension")
+				}
+				
+				if let configuration {
+					self.configuration = try String(contentsOf: URL(string: configuration)!)
+				}
 			} catch {
 				
 			}
@@ -138,102 +174,39 @@ class ViewController: UIViewController {
 	}
 	
 	private func connectVPN() async throws {
-	/*	let manager = NEVPNManager.shared()
+		let configuration = try! OpenVPN.ConfigurationParser.parsed(fromContents: self.configuration!).configuration
 		
-		try await manager.loadFromPreferences()
+		var providerConfiguration = OpenVPN.ProviderConfiguration(
+			"Country Switcher VPN",
+			appGroup: "group.com.aquis.CountrySwitcher",
+			configuration: configuration
+		)
 		
-		let connection = NEVPNProtocolIPSec()
+		providerConfiguration.username = username
 		
-		connection.serverAddress = serverAddress
+		var extra = NetworkExtensionExtra()
 		
-		connection.username = username
-		connection.passwordReference = $password
-		
-		connection.authenticationMethod = .sharedSecret
-		connection.sharedSecretReference = $sharedSecret
-		
-		connection.useExtendedAuthentication = true
-		connection.disconnectOnSleep = false
-		
-		manager.isEnabled = true
-		manager.protocolConfiguration = connection
-		manager.isOnDemandEnabled = false
-		manager.localizedDescription = serverAddress
-		
-		try await manager.saveToPreferences()
-		
-		print("Connecting…")
-		
-		try manager.connection.startVPNTunnel()
-		
-		print("Connected?")*/
-		
-		let prtcl = NEVPNProtocolIPSec()
-		prtcl.username = username
-		prtcl.passwordReference = $password
-		prtcl.serverAddress = serverAddress
-		prtcl.authenticationMethod = NEVPNIKEAuthenticationMethod.sharedSecret
-		prtcl.sharedSecretReference = $sharedSecret
-		prtcl.localIdentifier = "Test iOS device"
-		prtcl.remoteIdentifier = serverAddress
-		prtcl.useExtendedAuthentication = true
-		prtcl.disconnectOnSleep = false
-		
-		let manager = NEVPNManager.shared()
-		
-		manager.isEnabled = true
-		manager.protocolConfiguration = prtcl
-		manager.isOnDemandEnabled = false
-		manager.localizedDescription = "MyVPN Configuration"
-		manager.saveToPreferences(completionHandler: { (error) in
-			if (error != nil)
-			{
-				print("Error: ", error.debugDescription)
-//				completion?(false)
-			}
-			else
-			{
-//				self.serverButton.setTitle(server.name, for: UIControlState.normal)
-				print("VPN prefs saved")
-//				completion?(true)
-			}
-		})
-	}
-	
-	private func disconnectVPN() async throws {
-		
-	}
-	
-/*	private var checkingConnection = false
-	
-	private func checkCurrentConnection() {
-		guard checkingConnection == false else {
+		guard let passwordReference = self.password else {
+			print("No password set")
 			return
 		}
 		
-		checkingConnection = true
+		extra.passwordReference = passwordReference
 		
-		setStatus("Checking current connection…")
-		
-		testCountry() { country in
-			self.checkingConnection = false
-			
-			if let country = country {
-				self.setInfoCountry(country)
-			} else {
-				let alert = UIAlertController(title: "Country Switcher", message: "Your device currently doesn’t appear to have a connection.", preferredStyle: .alert)
-				
-				alert.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
-				
-				self.present(alert, animated: true, completion: nil)
-			}
-			
-			self.setStatus(nil)
-		}
+		try await vpn.reconnect(
+			"com.aquis.CountrySwitcher.OpenVPNExtension",
+			configuration: providerConfiguration,
+			extra: extra,
+			after: .seconds(2)
+		)
+	}
+	
+	private func disconnectVPN() async throws {
+		await vpn.disconnect()
 	}
 	
 	private func setStatus(_ status: String?) {
-		if let status = status {
+		if let status {
 			statusLabel?.text = status
 			statusLabel?.isHidden = false
 			
@@ -250,85 +223,14 @@ class ViewController: UIViewController {
 		}
 	}
 	
-	private func setInfoCountry(_ countryCode: String?) {
-		infoLabel?.isHidden = false
-		
-		if let code = countryCode {
-			let countryCodes = [
-				"GB": "United Kingdom",
-				"US": "United States"
-			]
-			
-			infoLabel?.text = "Current country: \(countryCodes[code] ?? code)"
+	private func setInfoCountry(_ message: String?) {
+		if let message {
+			infoLabel?.isHidden = false
+			currentCountryLabel?.isHidden = false
+			infoLabel?.text = message
 		} else {
-			infoLabel?.text = "No internet connection."
+			infoLabel?.isHidden = true
+			currentCountryLabel?.isHidden = true
 		}
 	}
-	
-	private func switchVpn(_ action: VPNAction) async {
-		setStatus("Communicating with router…")
-		
-		func alert(message: String) {
-			let alert = UIAlertController(title: "Country Switcher", message: message, preferredStyle: .alert)
-			
-			alert.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
-			
-			self.present(alert, animated: true, completion: nil)
-		}
-		
-		/*vpnActionRequest(action) { success in
-			if success {
-				var attempts = 0
-				
-				func checkIfConnected() {
-					attempts += 1
-					
-					self.setStatus("Waiting for VPN (\(attempts))…")
-					
-					self.testCountry() { country in
-						if country == action.targetCountry {
-							self.setStatus(nil)
-							
-							self.setInfoCountry(country)
-						} else {
-							if attempts < 20 {
-								Timer.scheduledTimer(withTimeInterval: 1, repeats: false) { _ in
-									checkIfConnected()
-								}
-							} else {
-								self.setStatus(nil)
-								
-								alert(message: "Could not switch country, try restarting the router.")
-							}
-						}
-					}
-				}
-				
-				checkIfConnected()
-			} else {
-				self.setStatus(nil)
-				alert(message: "Failed to communicate with router.")
-			}
-		}*/
-	}
-	
-	private func testCountry() async throws -> String {
-		let url = URL(string: "https://ipinfo.io/country")!
-		let request = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalAndRemoteCacheData, timeoutInterval: 5)
-		
-		enum CountryError: Error {
-			case invalidResponse
-		}
-		
-		let (data, _) = try await session.data(for: request)
-		
-		guard let string = String(data: data, encoding: .utf8) else {
-			throw CountryError.invalidResponse
-		}
-		
-		let trimmedString = string.trimmingCharacters(in: .whitespacesAndNewlines)
-		
-		return trimmedString
-	}*/
 }
-
